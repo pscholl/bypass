@@ -1,0 +1,14 @@
+apply plugin: 'android-library'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.0.3"
+	
+	sourceSets.main.jni.srcDirs = []
+
+    /*defaultConfig {
+        ndk {
+            moduleName "bypass"
+        }
+    }*/
+}

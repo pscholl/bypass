@@ -30,6 +30,7 @@ static int rndr_emphasis(struct buf *ob, struct buf *text, char c, void *opaque)
 static int rndr_triple_emphasis(struct buf *ob, struct buf *text, char c, void *opaque);
 static int rndr_linebreak(struct buf *ob, void *opaque);
 static int rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *content, void *opaque);
+static int rndr_image(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt, void *opaque);
 static void rndr_normal_text(struct buf *ob, struct buf *text, void *opaque);
 
 struct mkd_renderer mkd_callbacks = {
@@ -55,7 +56,7 @@ struct mkd_renderer mkd_callbacks = {
 	rndr_codespan,        // codespan
 	rndr_double_emphasis, // double emphasis
 	rndr_emphasis,        // emphasis
-	NULL,                 // image
+	rndr_image,           // image
 	rndr_linebreak,       // line break
 	rndr_link,            // link
 	NULL,                 // raw html tag
@@ -202,7 +203,7 @@ namespace Bypass {
 
 		std::vector<std::string> strs;
 		std::string textString;
-		if (text) {
+		if (text && text->size) {
 			textString = std::string(text->data, text->data + text->size);
 			boost::split(strs, textString, boost::is_any_of("|"));
 		}
@@ -227,7 +228,7 @@ namespace Bypass {
                         element.addAttribute("title", std::string(extra2->data, extra2->data + extra2->size));
                     }
                 }
-                
+
                 elementSoup.erase(pos);
                 if (output) {
                     elementSoup[pos] = element;
@@ -286,6 +287,21 @@ namespace Bypass {
 
 	int Parser::parsedLink(struct buf *ob, struct buf *link, struct buf *title, struct buf *content) {
 		handleSpan(LINK, ob, content, link, title);
+		return 1;
+	}
+
+
+	int Parser::parsedImage(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt) {
+    if (link && link->size) {
+      Element imSpan;
+      imSpan.setType(IMAGE);
+      imSpan.text.assign(link->data, link->data + link->size);
+      if (title && title->size)
+        imSpan.addAttribute("title", std::string(title->data, title->data + title->size));
+      if (alt && alt->size)
+        imSpan.addAttribute("alt", std::string(alt->data, alt->data + alt->size));
+      elementSoup[elementCount] = imSpan;
+    }
 		return 1;
 	}
 
@@ -371,6 +387,10 @@ static int rndr_linebreak(struct buf *ob, void *opaque) {
 
 static int rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *content, void *opaque) {
 	return ((Bypass::Parser*) opaque)->parsedLink(ob, link, title, content);
+}
+
+static int rndr_image(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt, void *opaque) {
+	return ((Bypass::Parser*) opaque)->parsedImage(ob, link, title, alt);
 }
 
 //	Low Level Callbacks

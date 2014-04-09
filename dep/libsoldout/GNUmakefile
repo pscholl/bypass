@@ -30,7 +30,7 @@ libsoldout.so:	libsoldout.so.1
 	ln -s $^ $@
 
 libsoldout.so.1: markdown.o array.o buffer.o renderers.o
-	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
+	$(CC) $(LDFLAGS) -shared $^ -o $@
 
 
 # executables

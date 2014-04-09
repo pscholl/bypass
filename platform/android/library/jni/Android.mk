@@ -12,6 +12,12 @@ LOCAL_SRC_FILES := \
 	../../../../dep/libsoldout/markdown.c \
 	../../../../dep/libsoldout/buffer.c \
 	../../../../dep/libsoldout/array.c
+
+LOCAL_CFLAGS += -I$(LOCAL_PATH)/boost/include/
+LOCAL_LDLIBS += -L$(LOCAL_PATH)/boost/lib/ -lboost_system -lboost_filesystem
+
+LOCAL_CPPFLAGS += -fexceptions
+LOCAL_CPPFLAGS += -frtti
 	
 LOCAL_C_INCLUDES:= ../../../dep/libsoldout ../../../src /opt/local/include /usr/local/include $(BYPASS_INCLUDE_PATH)
 

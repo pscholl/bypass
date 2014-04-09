@@ -34,7 +34,7 @@ public class Bypass {
 		return TextUtils.concat(spans);
 	}
 
-	private native Document processMarkdown(String markdown);
+	public native Document processMarkdown(String markdown);
 
 	private CharSequence recurseElement(Element element) {
 

@@ -63,6 +63,7 @@ namespace Bypass {
 		int parsedTripleEmphasis(struct buf *ob, struct buf *text, char c);
 		int parsedLinebreak(struct buf *ob);
 		int parsedLink(struct buf *ob, struct buf *link, struct buf *title, struct buf *content);
+		int parsedImage(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt);
 
 		// Low Level Callbacks
 

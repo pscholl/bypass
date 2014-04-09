@@ -72,6 +72,16 @@ public class Element {
 		this.children = children;
 	}
 
+	public Map<String,String> getAttributes() {
+		return attributes;
+	}
+
+	public Element getChild(int pos) {
+		if (pos > children.length || pos < 0)
+			return null;
+		return children[pos];
+	}
+
 	public void addAttribute(String name, String value) {
 		attributes.put(name, value);
 	}
@@ -97,6 +107,10 @@ public class Element {
 	
 	public Type getType() {
 		return type;
+	}
+
+	public void setType(Type t) {
+		type = t;
 	}
 	
 	public boolean isBlockElement() {

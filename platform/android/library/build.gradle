@@ -20,12 +20,20 @@ android {
 			variant.javaCompile.dependsOn compileCustomNdk}
 }
 
+ant.condition(property: "os", value: "windows") { os(family: "windows") }
+ant.condition(property: "os", value: "unix"   ) { os(family: "unix")    }
+
 task compileCustomNdk {
 	inputs.dir('src/main/jni')
 	def objDir = file('src/main/obj')
 	def outDirs = files(objDir, 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
 	objDir.mkdir()
 	outputs.dir outDirs
+
+	if (ant.properties.os != 'windows') {
+		logger.error("Please compile native dependencies manually")
+		throw new StopExecutionException();
+	}
 
 	doLast {
 		println("Compiling Ndk using Make files")
@@ -41,5 +49,9 @@ task compileCustomNdk {
 }
 
 task cleanNdk {
+	if (ant.properties.os != 'windows') {
+		logger.error("Ignoring prebuilt native dependencies")
+		throw new StopExecutionException();
+	}
 	delete('src/main/obj', 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
 }

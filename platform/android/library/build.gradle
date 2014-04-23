@@ -30,28 +30,29 @@ task compileCustomNdk {
 	objDir.mkdir()
 	outputs.dir outDirs
 
-	if (ant.properties.os != 'windows') {
-		logger.error("Please compile native dependencies manually")
-		throw new StopExecutionException();
-	}
+	
 
 	doLast {
-		println("Compiling Ndk using Make files")
-//		def cmd = "ndk-build.cmd -C${projectDir}/src/main/jni"
-//		def res = cmd.execute();
-//		println res.text
-		exec() {
-			workingDir "${projectDir}/src/main/jni"
-			executable 'ndk-build.cmd'
-//			args ['-C${projectDir}/src/main/jni']
+		if (ant.properties.os != 'windows') {
+			logger.error("!!! Please compile native dependencies manually !!!")
+		} else {
+			println("Compiling Ndk using Make files")
+	//		def cmd = "ndk-build.cmd -C${projectDir}/src/main/jni"
+	//		def res = cmd.execute();
+	//		println res.text
+			exec() {
+				workingDir "${projectDir}/src/main/jni"
+				executable 'ndk-build.cmd'
+	//			args ['-C${projectDir}/src/main/jni']
+			}
 		}
 	}
 }
 
 task cleanNdk {
 	if (ant.properties.os != 'windows') {
-		logger.error("Ignoring prebuilt native dependencies")
-		throw new StopExecutionException();
+		logger.error("!!! Ignoring prebuilt native dependencies !!!")
+	} else {
+		delete('src/main/obj', 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
 	}
-	delete('src/main/obj', 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
 }

@@ -14,4 +14,32 @@ android {
             moduleName "bypass"
         }
     }*/
+
+	libraryVariants.all{
+		variant ->
+			variant.javaCompile.dependsOn compileCustomNdk}
+}
+
+task compileCustomNdk {
+	inputs.dir('src/main/jni')
+	def objDir = file('src/main/obj')
+	def outDirs = files(objDir, 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
+	objDir.mkdir()
+	outputs.dir outDirs
+
+	doLast {
+		println("Compiling Ndk using Make files")
+//		def cmd = "ndk-build.cmd -C${projectDir}/src/main/jni"
+//		def res = cmd.execute();
+//		println res.text
+		exec() {
+			workingDir "${projectDir}/src/main/jni"
+			executable 'ndk-build.cmd'
+//			args ['-C${projectDir}/src/main/jni']
+		}
+	}
+}
+
+task cleanNdk {
+	delete('src/main/obj', 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
 }

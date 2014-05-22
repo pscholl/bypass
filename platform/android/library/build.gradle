@@ -3,11 +3,11 @@ apply plugin: 'android-library'
 android {
     compileSdkVersion 19
     buildToolsVersion "19.0.3"
-	
-	sourceSets.main{
-		jni.srcDirs = []
-		jniLibs.srcDir 'src/main/libs'
-	}
+  
+  sourceSets.main{
+    jni.srcDirs = []
+    jniLibs.srcDir 'src/main/libs'
+  }
 
     /*defaultConfig {
         ndk {
@@ -15,42 +15,44 @@ android {
         }
     }*/
 
-	libraryVariants.all{
-		variant ->
-			variant.javaCompile.dependsOn compileCustomNdk}
+  libraryVariants.all{
+    variant ->
+      variant.javaCompile.dependsOn compileCustomNdk}
 }
 
 ant.condition(property: "os", value: "windows") { os(family: "windows") }
 ant.condition(property: "os", value: "unix"   ) { os(family: "unix")    }
 
 task compileCustomNdk {
-	inputs.dir files('src/main/jni', '../../../src', '../../../dep')
-	def objDir = file('src/main/obj')
-	def outDirs = files('src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
-	objDir.mkdir()
-	outputs.dir outDirs
+  inputs.dir files('src/main/jni', '../../../src', '../../../dep')
+  def objDir = file('src/main/obj')
+  def outDirs = files('src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
+  objDir.mkdir()
+  outputs.dir outDirs
 
-	doLast {
-		if (ant.properties.os != 'windows') {
-			logger.error("!!! Please compile native dependencies manually !!!")
-		} else {
-			println("Compiling Ndk using Make files")
-	//		def cmd = "ndk-build.cmd -C${projectDir}/src/main/jni"
-	//		def res = cmd.execute();
-	//		println res.text
-			exec() {
-				workingDir "${projectDir}/src/main/jni"
-				executable 'ndk-build.cmd'
-	//			args ['-C${projectDir}/src/main/jni']
-			}
-		}
-	}
+  doLast {
+    println("Compiling Ndk using Make files")
+
+    if (ant.properties.os != 'windows') {
+      exec() {
+        workingDir "${projectDir}/src/main/jni"
+        executable 'ndk-build'
+        //args ['-C${projectDir}/src/main/jni']
+      }
+    } else {
+      exec() {
+        workingDir "${projectDir}/src/main/jni"
+        executable 'ndk-build.cmd'
+        //args ['-C${projectDir}/src/main/jni']
+      }
+    }
+  }
 }
 
 //task cleanNdk {
-//	if (ant.properties.os != 'windows') {
-//		logger.error("!!! Ignoring prebuilt native dependencies !!!")
-//	} else {
-//		delete('src/main/obj', 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
-//	}
+//  if (ant.properties.os != 'windows') {
+//    logger.error("!!! Ignoring prebuilt native dependencies !!!")
+//  } else {
+//    delete('src/main/obj', 'src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
+//  }
 //}

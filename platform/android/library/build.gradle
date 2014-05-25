@@ -1,52 +1,48 @@
 apply plugin: 'android-library'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.0.3"
-  
-  sourceSets.main{
-    jni.srcDirs = []
-    jniLibs.srcDir 'src/main/libs'
-  }
+	compileSdkVersion 19
+	buildToolsVersion "19.0.3"
 
-    /*defaultConfig {
-        ndk {
-            moduleName "bypass"
-        }
-    }*/
+	sourceSets.main {
+		jni.srcDirs = []
+		jniLibs.srcDir 'src/main/libs'
+	}
 
-  libraryVariants.all{
-    variant ->
-      variant.javaCompile.dependsOn compileCustomNdk}
+	/*defaultConfig {
+		ndk {
+			moduleName "bypass"
+		}
+	}*/
+
+	libraryVariants.all {
+		variant ->
+			variant.javaCompile.dependsOn compileCustomNdk
+	}
 }
 
 ant.condition(property: "os", value: "windows") { os(family: "windows") }
-ant.condition(property: "os", value: "unix"   ) { os(family: "unix")    }
+ant.condition(property: "os", value: "unix") { os(family: "unix") }
 
 task compileCustomNdk {
-  inputs.dir files('src/main/jni', '../../../src', '../../../dep')
-  def objDir = file('src/main/obj')
-  def outDirs = files('src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
-  objDir.mkdir()
-  outputs.dir outDirs
+	inputs.dir files('src/main/jni', '../../../src', '../../../dep')
+	def objDir = file('src/main/obj')
+	def outDirs = files('src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
+	objDir.mkdir()
+	outputs.dir outDirs
 
-  doLast {
-    println("Compiling Ndk using Make files")
+	doLast {
+		println("Compiling Ndk using Make files")
 
-    if (ant.properties.os != 'windows') {
-      exec() {
-        workingDir "${projectDir}/src/main/jni"
-        executable 'ndk-build'
-        //args ['-C${projectDir}/src/main/jni']
-      }
-    } else {
-      exec() {
-        workingDir "${projectDir}/src/main/jni"
-        executable 'ndk-build.cmd'
-        //args ['-C${projectDir}/src/main/jni']
-      }
-    }
-  }
+		def ndkCom = (ant.properties.os != 'windows') ? 'ndk-build' : 'ndk-build.cmd'
+
+
+		exec() {
+			workingDir "${projectDir}/src/main/jni"
+			executable ndkCom
+			//args ['-C${projectDir}/src/main/jni']
+		}
+	}
 }
 
 //task cleanNdk {

@@ -27,7 +27,7 @@ ant.condition(property: "os", value: "unix") { os(family: "unix") }
 task compileCustomNdk {
 	inputs.dir files('src/main/jni', '../../../src', '../../../dep')
 	def objDir = file('src/main/obj')
-	def outDirs = files('src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86')
+	def outDirs = files('src/main/libs/armeabi', 'src/main/libs/armeabi-v7a', 'src/main/libs/mips', 'src/main/libs/x86', 'src/main/libs/arm64-v8a', 'src/main/libs/mips64', 'src/main/libs/x86_64')
 	objDir.mkdir()
 	outputs.dir outDirs
 
@@ -35,11 +35,12 @@ task compileCustomNdk {
 		println("Compiling Ndk using Make files")
 
 		def ndkCom = (ant.properties.os != 'windows') ? 'ndk-build' : 'ndk-build.cmd'
+		def path = System.getenv('ANDROID_NDK_HOME');
 
 
 		exec() {
 			workingDir "${projectDir}/src/main/jni"
-			executable ndkCom
+			commandLine path+'/'+ndkCom
 			//args ['-C${projectDir}/src/main/jni']
 		}
 	}
